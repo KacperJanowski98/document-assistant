@@ -2,33 +2,33 @@
 
 ## Phase 0: Setup & Pre-processing Evaluation
 
--   [ ] **Environment Setup:**
-    -   [ ] Ensure Python >= 3.10.
-    -   [ ] Install `uv`.
-    -   [ ] Create/activate venv using `uv`.
-    -   [ ] Init Git repo.
-    -   [ ] **Create `.gitignore` file and add `.env` and common Python ignores (`__pycache__/`, `.venv/`, etc.).**
--   [ ] **Project Structure:**
-    -   [ ] Create dirs (`src/`, `tests/`, etc.).
-    -   [ ] Create `src/main.py`, `src/config.py`.
-    -   [ ] Init dependency file (`pyproject.toml` or `requirements.txt`).
-    -   [ ] **Create `.env.example` file with placeholders for required environment variables (e.g., `LANGCHAIN_API_KEY=YOUR_API_KEY_HERE`).**
--   [ ] **Install Core Dependencies (using `uv`):**
-    -   [ ] Install `langchain langchain-community langchain-ollama`.
-    -   [ ] Install `ollama` (CLI). Pull LLM model.
-    -   [ ] Install `chromadb`.
-    -   [ ] Install `pytest`.
-    -   [ ] Install `langsmith`.
-    -   [ ] Install `ragas`.
-    -   [ ] Install `unstructured[md]`.
-    -   [ ] Install `sentence-transformers`.
-    -   [ ] Install `torch` (if required).
-    -   [ ] Install CLI lib (e.g., `click`).
-    -   [ ] Install `ruff`.
-    -   [ ] **Install `python-dotenv`.**
-    -   [ ] Add packages to dependency file.
--   [ ] **Configure Tooling:**
-    -   [ ] Configure `ruff`.
+-   [x] **Environment Setup:**
+    -   [x] Ensure Python >= 3.10.
+    -   [x] Install `uv`.
+    -   [x] Create/activate venv using `uv`.
+    -   [x] Init Git repo.
+    -   [x] **Create `.gitignore` file and add `.env` and common Python ignores (`__pycache__/`, `.venv/`, etc.).**
+-   [x] **Project Structure:**
+    -   [x] Create dirs (`src/`, `tests/`, etc.).
+    -   [x] Create `src/main.py`, `src/config.py`.
+    -   [x] Init dependency file (`pyproject.toml` or `requirements.txt`).
+    -   [x] **Create `.env.example` file with placeholders for required environment variables (e.g., `LANGCHAIN_API_KEY=YOUR_API_KEY_HERE`).**
+-   [x] **Install Core Dependencies (using `uv`):**
+    -   [x] Install `langchain langchain-community langchain-ollama`.
+    -   [x] Install `ollama` (CLI). Pull LLM model.
+    -   [x] Install `chromadb`.
+    -   [x] Install `pytest`.
+    -   [x] Install `langsmith`.
+    -   [x] Install `ragas`.
+    -   [x] Install `unstructured[md]`.
+    -   [x] Install `sentence-transformers`.
+    -   [x] Install `torch` (if required).
+    -   [x] Install CLI lib (e.g., `click`).
+    -   [x] Install `ruff`.
+    -   [x] **Install `python-dotenv`.**
+    -   [x] Add packages to dependency file.
+-   [x] **Configure Tooling:**
+    -   [x] Configure `ruff`.
 -   [ ] **PDF-to-Markdown Tool Evaluation (Manual):**
     -   [ ] Install `docling` & `marker`.
     -   [ ] Get sample PDF.
