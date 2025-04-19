@@ -22,6 +22,8 @@ dependencies = [
     "click",
     "ruff",
     "python-dotenv",
+    "docling>=2.30.0",
+    "marker-pdf>=0.2.17",
 ]
 
 [build-system]
