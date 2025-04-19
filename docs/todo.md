@@ -29,8 +29,8 @@
     -   [x] Add packages to dependency file.
 -   [x] **Configure Tooling:**
     -   [x] Configure `ruff`.
--   [ ] **PDF-to-Markdown Tool Evaluation (Manual):**
-    -   [ ] Install `docling` & `marker`.
+-   [x] **PDF-to-Markdown Tool Evaluation (Manual):**
+    -   [x] Install `docling` & `marker`.
     -   [ ] Get sample PDF.
     -   [ ] Run tools.
     -   [ ] Compare outputs.
