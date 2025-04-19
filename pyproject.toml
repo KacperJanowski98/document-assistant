@@ -1,0 +1,48 @@
+[project]
+name = "document-assistant"
+version = "0.1.0"
+description = "RAG POC for Technical Documents"
+authors = [
+    {name = "Kacper Janowski", email = "example@example.com"},
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "langchain",
+    "langchain-community",
+    "langchain-ollama",
+    "chromadb",
+    "pytest",
+    "langsmith",
+    "ragas",
+    "unstructured[md]",
+    "sentence-transformers",
+    "torch",
+    "click",
+    "ruff",
+    "python-dotenv",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "B", "I", "N", "UP", "ANN", "C4", "SIM", "ARG"]
+ignore = ["ANN101", "ANN102", "ANN204"]
+
+[tool.ruff.isort]
+known-first-party = ["src"]
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true
+allow-star-arg-any = true
