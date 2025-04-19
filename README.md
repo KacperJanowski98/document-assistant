@@ -34,7 +34,8 @@ The Document Assistant aims to solve the problem of accurately extracting precis
 5. Install and run Ollama with the required model:
    ```
    # Follow instructions at https://ollama.ai/ to install Ollama
-   ollama pull mistral  # pulls the default model specified in config.py
+   ollama pull hf.co/mradermacher/Llama-PLLuM-8B-instruct-GGUF:Q8_0
+   ollama create pllum-8b-gguf-q8:custom -f Modelfile  # the default model specified in config.py
    ```
 
 ### Configuration
