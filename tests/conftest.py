@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Configuration fixtures for pytest.
 """
 import sys
 from pathlib import Path
+
 import pytest
 
 # Add the src directory to the path so we can import modules for testing
@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 
 @pytest.fixture
-def sample_markdown_content():
+def sample_markdown_content() -> str:
     """Return sample markdown content for testing."""
     return """# Sample Technical Document
 

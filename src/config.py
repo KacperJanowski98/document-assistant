@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Configuration module for the document assistant application.
 """
-import os
 from pathlib import Path
 
 # Project directories
@@ -17,7 +14,7 @@ DATA_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Ollama settings
-OLLAMA_MODEL = "mistral"  # Default LLM model from Ollama
+OLLAMA_MODEL = "pllum-8b-gguf-q8:custom"  # Default LLM model from Ollama
 OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama API URL
 
 # Embedding settings
@@ -40,8 +37,8 @@ ENABLE_RAGAS_EVAL = True  # Toggle for RAGAS evaluation
 
 # Prompt templates
 SYSTEM_PROMPT = """
-You are a technical document assistant. Your task is to provide accurate and helpful information from 
-technical documents, especially communication protocol specifications.
+You are a technical document assistant. Your task is to provide accurate and helpful information 
+from technical documents, especially communication protocol specifications.
 
 Always stay faithful to the provided context. If the information to answer the query is not present 
 in the context, clearly state that you don't have that information.
@@ -62,7 +59,7 @@ Answer:
 """
 
 
-def get_config_summary():
+def get_config_summary():  # noqa: ANN201
     """Return a summary of the current configuration."""
     return {
         "ollama_model": OLLAMA_MODEL,

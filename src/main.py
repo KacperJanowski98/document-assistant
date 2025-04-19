@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Main module for the document assistant application.
 """
 import os
 import sys
 from pathlib import Path
+
 import dotenv
 
 # Add the src directory to the path so we can import modules
@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 dotenv.load_dotenv()
 
 
-def main():
+def main():  # noqa: ANN201
     """Main entry point for the application."""
     print("Document Assistant - RAG POC for Technical Documents")
     print("Environment setup successful!")

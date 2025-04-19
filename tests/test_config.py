@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for the config module.
 """
-import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add the src directory to the path so we can import modules for testing
 sys.path.append(str(Path(__file__).parent.parent))
@@ -13,15 +11,15 @@ sys.path.append(str(Path(__file__).parent.parent))
 from src import config
 
 
-def test_config_paths():
+def test_config_paths() -> None:
     """Test that the config paths are set correctly."""
-    assert config.PROJECT_ROOT == Path(config.__file__).parent.parent
+    assert Path(config.__file__).parent.parent == config.PROJECT_ROOT
     assert config.SRC_DIR == config.PROJECT_ROOT / "src"
     assert config.DATA_DIR == config.PROJECT_ROOT / "data"
     assert config.OUTPUT_DIR == config.PROJECT_ROOT / "output"
 
 
-def test_get_config_summary():
+def test_get_config_summary() -> None:
     """Test the get_config_summary function."""
     summary = config.get_config_summary()
     assert "ollama_model" in summary

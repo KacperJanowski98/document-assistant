@@ -3,7 +3,7 @@ name = "document-assistant"
 version = "0.1.0"
 description = "RAG POC for Technical Documents"
 authors = [
-    {name = "Kacper Janowski", email = "example@example.com"},
+    {name = "Kacper Janowski"},
 ]
 requires-python = ">=3.10"
 readme = "README.md"
