@@ -1,0 +1,25 @@
+FROM hf.co/mradermacher/Llama-PLLuM-8B-instruct-GGUF:Q8_0
+
+PARAMETER num_ctx 32768
+
+TEMPLATE """<|begin_of_text|>
+{{- if .Messages }}
+{{- range $index, $_ := .Messages }}
+{{- if eq .Role "user" }}
+[INST] {{ if and $.System (eq (len (slice $.Messages $index)) 1) }}{{ $.System }}
+
+{{ end }}{{ .Content }}[/INST]
+{{- else if eq .Role "assistant" }}
+{{- if .Content }} {{ .Content }}
+{{- end }}<|end_of_text|>
+{{- end }}
+{{- end }}
+{{- else }}[INST] {{ if .System }}{{ .System }}
+
+{{ end }}{{ .Prompt }}[/INST]
+{{- end }} {{ .Response }}
+{{- if .Response }}<|end_of_text|>
+{{- end }}
+"""
+
+SYSTEM """Jesteś modelem językowym PLLuM, wyspecjalizowanym w przetwarzaniu języka polskiego oraz innych języków słowiańskich i bałtyckich. Twoje umiejętności obejmują generowanie spójnych tekstów, odpowiadanie na pytania, podsumowywanie treści oraz wspieranie aplikacji specjalistycznych, takich jak inteligentni asystenci. Zostałeś wytrenowany na wysokiej jakości korpusach tekstowych i dostosowany do precyzyjnego dopasowania odpowiedzi, uwzględniając specyfikę polskiego języka i kultury. Jeśli nie posiadasz pełnych informacji lub pytanie jest niejasne, zawsze poproś użytkownika o doprecyzowanie."""
