@@ -1,13 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 LLM generator module for generating answers from retrieved contexts.
 """
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 from langchain.prompts import PromptTemplate
-from langchain_community.llms import Ollama
 from langchain.schema import Document
+from langchain_community.llms import Ollama
 
 from src import config
 
@@ -17,10 +15,10 @@ class LLMGenerator:
 
     def __init__(
         self, 
-        model_name: Optional[str] = None,
-        base_url: Optional[str] = None,
-        system_prompt: Optional[str] = None,
-        rag_prompt_template: Optional[str] = None,
+        model_name: str | None = None,
+        base_url: str | None = None,
+        system_prompt: str | None = None,
+        rag_prompt_template: str | None = None,
     ):
         """
         Initialize the LLM generator.
@@ -45,7 +43,7 @@ class LLMGenerator:
             input_variables=["system_prompt", "context", "query"]
         )
 
-    def _initialize_llm(self):
+    def _initialize_llm(self):  # noqa: ANN202
         """
         Initialize the Ollama LLM.
 
@@ -58,7 +56,7 @@ class LLMGenerator:
             temperature=0.0,  # Use a low temperature for more deterministic answers
         )
 
-    def process_retrieved_documents(self, docs: List[Document]) -> Dict[str, Any]:
+    def process_retrieved_documents(self, docs: list[Document]) -> dict[str, Any]:
         """
         Process retrieved documents to get context and similarity scores.
 
@@ -111,7 +109,7 @@ class LLMGenerator:
             "score_stats": score_stats
         }
 
-    def generate_answer(self, query: str, retrieved_docs: List[Document]) -> Dict[str, Any]:
+    def generate_answer(self, query: str, retrieved_docs: list[Document]) -> dict[str, Any]:
         """
         Generate an answer based on the query and retrieved documents.
 

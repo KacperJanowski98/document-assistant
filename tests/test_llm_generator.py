@@ -1,21 +1,20 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for the LLM generator module.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from langchain.schema import Document
 
-from src.llm_generator import LLMGenerator
 from src import config
+from src.llm_generator import LLMGenerator
 
 
 class TestLLMGenerator:
     """Test the LLMGenerator class."""
 
-    def test_init_with_defaults(self):
+    def test_init_with_defaults(self) -> None:
         """Test initialization with default values."""
         with patch('src.llm_generator.Ollama') as mock_ollama:
             mock_llm = MagicMock()
@@ -36,7 +35,7 @@ class TestLLMGenerator:
                 temperature=0.0
             )
 
-    def test_init_with_custom_values(self):
+    def test_init_with_custom_values(self) -> None:
         """Test initialization with custom values."""
         with patch('src.llm_generator.Ollama') as mock_ollama:
             mock_llm = MagicMock()
@@ -66,7 +65,7 @@ class TestLLMGenerator:
                 temperature=0.0
             )
 
-    def test_process_retrieved_documents_empty(self):
+    def test_process_retrieved_documents_empty(self) -> None:
         """Test processing empty retrieved documents."""
         with patch('src.llm_generator.Ollama'):
             generator = LLMGenerator()
@@ -76,7 +75,7 @@ class TestLLMGenerator:
             assert result["chunk_count"] == 0
             assert result["score_stats"] == {}
 
-    def test_process_retrieved_documents(self):
+    def test_process_retrieved_documents(self) -> None:
         """Test processing retrieved documents."""
         with patch('src.llm_generator.Ollama'):
             generator = LLMGenerator()
@@ -111,7 +110,7 @@ class TestLLMGenerator:
             assert result["score_stats"]["max_score"] == 0.8
             assert result["score_stats"]["avg_score"] == pytest.approx(0.7)
 
-    def test_generate_answer(self):
+    def test_generate_answer(self) -> None:
         """Test generating an answer."""
         with patch('src.llm_generator.Ollama') as mock_ollama:
             # Setup mock LLM

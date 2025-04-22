@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 RAG pipeline module for coordinating document processing, retrieval, and generation.
 """
-from typing import Dict, Any, Optional, List
 import os
 import time
+from typing import Any
 
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.tracers import LangChainTracer
@@ -14,7 +12,6 @@ from langchain.schema import Document
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.llm_generator import LLMGenerator
-from src import config
 
 
 class RAGPipeline:
@@ -22,9 +19,9 @@ class RAGPipeline:
 
     def __init__(
         self,
-        document_processor: Optional[DocumentProcessor] = None,
-        embedding_manager: Optional[EmbeddingManager] = None,
-        llm_generator: Optional[LLMGenerator] = None,
+        document_processor: DocumentProcessor | None = None,
+        embedding_manager: EmbeddingManager | None = None,
+        llm_generator: LLMGenerator | None = None,
         enable_langsmith: bool = True,
     ):
         """
@@ -42,7 +39,7 @@ class RAGPipeline:
         self.enable_langsmith = enable_langsmith
         self.callback_manager = self._setup_callbacks() if enable_langsmith else None
 
-    def _setup_callbacks(self) -> Optional[CallbackManager]:
+    def _setup_callbacks(self) -> CallbackManager | None:
         """
         Set up callbacks for LangSmith tracing if applicable.
 
@@ -56,7 +53,9 @@ class RAGPipeline:
             return None
         
         try:
-            tracer = LangChainTracer(project_name=os.getenv("LANGCHAIN_PROJECT", "document-assistant"))
+            tracer = LangChainTracer(
+                project_name=os.getenv("LANGCHAIN_PROJECT", "document-assistant")
+                )
             return CallbackManager([tracer])
         except Exception as e:
             print(f"Warning: Failed to initialize LangSmith tracer: {e}")
@@ -93,7 +92,7 @@ class RAGPipeline:
         
         return len(chunks)
 
-    def retrieve(self, query: str, top_k: Optional[int] = None) -> List[Document]:
+    def retrieve(self, query: str, top_k: int | None = None) -> list[Document]:
         """
         Retrieve relevant documents for a query.
 
@@ -110,7 +109,7 @@ class RAGPipeline:
         # Retrieve documents
         return retriever.invoke(query)
 
-    def query(self, query: str, top_k: Optional[int] = None) -> Dict[str, Any]:
+    def query(self, query: str, top_k: int | None = None) -> dict[str, Any]:
         """
         Process a query through the RAG pipeline.
 

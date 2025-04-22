@@ -1,26 +1,23 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for the RAG pipeline module.
 """
 import os
-import tempfile
+from unittest.mock import MagicMock, patch
 
 import pytest
-from unittest.mock import patch, MagicMock
 from langchain.schema import Document
 
-from src.rag_pipeline import RAGPipeline
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.llm_generator import LLMGenerator
+from src.rag_pipeline import RAGPipeline
 
 
 class TestRAGPipeline:
     """Test the RAGPipeline class."""
 
     @pytest.fixture
-    def mock_components(self):
+    def mock_components(self) -> dict[str, MagicMock]:
         """Create mock components for testing."""
         mock_doc_processor = MagicMock(spec=DocumentProcessor)
         mock_embedding_manager = MagicMock(spec=EmbeddingManager)
@@ -32,7 +29,7 @@ class TestRAGPipeline:
             "llm_generator": mock_llm_generator
         }
 
-    def test_init_with_components(self, mock_components):
+    def test_init_with_components(self, mock_components: dict[str, MagicMock]) -> None:
         """Test initialization with provided components."""
         pipeline = RAGPipeline(
             document_processor=mock_components["doc_processor"],
@@ -50,7 +47,7 @@ class TestRAGPipeline:
     @patch('src.rag_pipeline.DocumentProcessor')
     @patch('src.rag_pipeline.EmbeddingManager')
     @patch('src.rag_pipeline.LLMGenerator')
-    def test_init_with_defaults(self, mock_llm_gen, mock_emb_mgr, mock_doc_proc):
+    def test_init_with_defaults(self, mock_llm_gen, mock_emb_mgr, mock_doc_proc) -> None:  # noqa: ANN001
         """Test initialization with default values."""
         # Setup mocks
         mock_doc_proc_instance = MagicMock()
@@ -76,7 +73,7 @@ class TestRAGPipeline:
 
     @patch.dict(os.environ, {"LANGCHAIN_API_KEY": "dummy_key", "LANGCHAIN_PROJECT": "test-project"})
     @patch('src.rag_pipeline.LangChainTracer')
-    def test_setup_callbacks_with_api_key(self, mock_tracer):
+    def test_setup_callbacks_with_api_key(self, mock_tracer) -> None:  # noqa: ANN001
         """Test setting up callbacks with API key present."""
         # Setup mocks
         mock_tracer_instance = MagicMock()
@@ -97,7 +94,7 @@ class TestRAGPipeline:
         assert pipeline.callback_manager is not None
 
     @patch.dict(os.environ, {}, clear=True)  # Clear environment variables
-    def test_setup_callbacks_without_api_key(self):
+    def test_setup_callbacks_without_api_key(self) -> None:
         """Test setting up callbacks without API key."""
         # Initialize pipeline with LangSmith enabled but no API key
         pipeline = RAGPipeline(
@@ -110,7 +107,7 @@ class TestRAGPipeline:
         # Verify callback_manager is None when no API key is present
         assert pipeline.callback_manager is None
 
-    def test_ingest_document(self, mock_components):
+    def test_ingest_document(self, mock_components: dict[str, MagicMock]) -> None:
         """Test ingesting a document."""
         # Setup mocks
         mock_doc_processor = mock_components["doc_processor"]
@@ -143,7 +140,7 @@ class TestRAGPipeline:
         # Verify result
         assert result == 2  # Number of chunks
 
-    def test_retrieve(self, mock_components):
+    def test_retrieve(self, mock_components: dict[str, MagicMock]) -> None:
         """Test retrieving documents."""
         # Setup mocks
         mock_embedding_manager = mock_components["embedding_manager"]
@@ -170,7 +167,7 @@ class TestRAGPipeline:
         # Verify result
         assert result == mock_docs
 
-    def test_query(self, mock_components):
+    def test_query(self, mock_components: dict[str, MagicMock]) -> None:
         """Test querying the pipeline."""
         # Setup mocks
         mock_embedding_manager = mock_components["embedding_manager"]

@@ -1,23 +1,15 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Embedding manager module for handling embeddings and vector store.
 """
-from typing import List, Dict, Any, Optional
 import os
-from pathlib import Path
+from typing import Any
 
 import chromadb
 from chromadb.errors import NotFoundError
-# Update import for HuggingFaceEmbeddings to use the non-deprecated version
-try:
-    from langchain_huggingface import HuggingFaceEmbeddings
-except ImportError:
-    # Fallback to the deprecated version if langchain_huggingface is not installed
-    from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings.base import Embeddings
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.embeddings.base import Embeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from src import config
 
@@ -27,10 +19,10 @@ class EmbeddingManager:
 
     def __init__(
         self,
-        embedding_model_provider: Optional[str] = None,
-        embedding_model_name: Optional[str] = None,
-        persist_directory: Optional[str] = None,
-        collection_name: Optional[str] = None,
+        embedding_model_provider: str | None = None,
+        embedding_model_name: str | None = None,
+        persist_directory: str | None = None,
+        collection_name: str | None = None,
     ):
         """
         Initialize the embedding manager.
@@ -71,7 +63,10 @@ class EmbeddingManager:
         if self.embedding_model_provider.lower() == "huggingface":
             return HuggingFaceEmbeddings(model_name=self.embedding_model_name)
         elif self.embedding_model_provider.lower() == "ollama":
-            return OllamaEmbeddings(model=self.embedding_model_name, base_url=config.OLLAMA_BASE_URL)
+            return OllamaEmbeddings(
+                model=self.embedding_model_name,
+                base_url=config.OLLAMA_BASE_URL
+                )
         else:
             raise ValueError(f"Unsupported embedding provider: {self.embedding_model_provider}")
 
@@ -105,7 +100,7 @@ class EmbeddingManager:
 
         return self._vector_store
 
-    def add_documents(self, chunks: List[Dict[str, Any]]) -> None:
+    def add_documents(self, chunks: list[dict[str, Any]]) -> None:
         """
         Add document chunks to the vector store.
 
@@ -125,7 +120,7 @@ class EmbeddingManager:
         vector_store.persist()
         print(f"Added {len(chunks)} chunks to ChromaDB collection: {self.collection_name}")
 
-    def get_retriever(self, top_k: Optional[int] = None) -> Any:
+    def get_retriever(self, top_k: int | None = None) -> Any:  # noqa: ANN401
         """
         Get a retriever for the vector store.
 

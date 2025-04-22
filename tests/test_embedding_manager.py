@@ -1,27 +1,23 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for the embedding manager module.
 """
-import os
-import tempfile
 import shutil
-from pathlib import Path
+import tempfile
+from unittest.mock import MagicMock, patch
 
 import pytest
-import chromadb
 from chromadb.errors import NotFoundError
-from unittest.mock import patch, MagicMock
 
-from src.embedding_manager import EmbeddingManager
 from src import config
+from src.embedding_manager import EmbeddingManager
 
 
 class TestEmbeddingManager:
     """Test the EmbeddingManager class."""
     
     @pytest.fixture
-    def temp_chroma_dir(self):
+    def temp_chroma_dir(self):  # noqa: ANN201
         """Create a temporary directory for ChromaDB."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
@@ -29,7 +25,7 @@ class TestEmbeddingManager:
         shutil.rmtree(temp_dir, ignore_errors=True)
     
     @patch('src.embedding_manager.HuggingFaceEmbeddings')
-    def test_init_with_huggingface(self, mock_hf_embeddings, temp_chroma_dir):
+    def test_init_with_huggingface(self, mock_hf_embeddings, temp_chroma_dir) -> None:  # noqa: ANN001
         """Test initialization with HuggingFace embeddings."""
         mock_hf_instance = MagicMock()
         mock_hf_embeddings.return_value = mock_hf_instance
@@ -51,7 +47,7 @@ class TestEmbeddingManager:
         assert manager.embedding_model == mock_hf_instance
     
     @patch('src.embedding_manager.OllamaEmbeddings')
-    def test_init_with_ollama(self, mock_ollama_embeddings, temp_chroma_dir):
+    def test_init_with_ollama(self, mock_ollama_embeddings, temp_chroma_dir) -> None:  # noqa: ANN001
         """Test initialization with Ollama embeddings."""
         mock_ollama_instance = MagicMock()
         mock_ollama_embeddings.return_value = mock_ollama_instance
@@ -70,7 +66,7 @@ class TestEmbeddingManager:
         )
         assert manager.embedding_model == mock_ollama_instance
     
-    def test_init_with_unsupported_provider(self, temp_chroma_dir):
+    def test_init_with_unsupported_provider(self, temp_chroma_dir) -> None:  # noqa: ANN001
         """Test initialization with an unsupported provider."""
         with pytest.raises(ValueError, match="Unsupported embedding provider"):
             EmbeddingManager(
@@ -81,7 +77,9 @@ class TestEmbeddingManager:
     @patch('src.embedding_manager.Chroma')
     @patch('src.embedding_manager.HuggingFaceEmbeddings')
     @patch('src.embedding_manager.chromadb.PersistentClient')
-    def test_get_or_create_vector_store(self, mock_client, mock_hf_embeddings, mock_chroma, temp_chroma_dir):
+    def test_get_or_create_vector_store(
+        self, mock_client, mock_hf_embeddings, mock_chroma, temp_chroma_dir  # noqa: ANN001
+        ) -> None:  # noqa: ANN001
         """Test getting or creating a vector store."""
         # Mock setup
         mock_hf_instance = MagicMock()
@@ -124,7 +122,7 @@ class TestEmbeddingManager:
         assert result2 == mock_chroma_instance
     
     @patch('src.embedding_manager.EmbeddingManager.get_or_create_vector_store')
-    def test_add_documents(self, mock_get_vector_store, temp_chroma_dir):
+    def test_add_documents(self, mock_get_vector_store, temp_chroma_dir) -> None:  # noqa: ANN001
         """Test adding documents to the vector store."""
         # Mock setup
         mock_vector_store = MagicMock()
@@ -152,7 +150,7 @@ class TestEmbeddingManager:
         mock_vector_store.persist.assert_called_once()
     
     @patch('src.embedding_manager.EmbeddingManager.get_or_create_vector_store')
-    def test_get_retriever(self, mock_get_vector_store, temp_chroma_dir):
+    def test_get_retriever(self, mock_get_vector_store, temp_chroma_dir) -> None:  # noqa: ANN001
         """Test getting a retriever."""
         # Mock setup
         mock_vector_store = MagicMock()

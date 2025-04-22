@@ -1,40 +1,38 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for the document processor module.
 """
 import os
 import tempfile
-from pathlib import Path
 
 import pytest
 
-from src.document_processor import DocumentProcessor
 from src import config
+from src.document_processor import DocumentProcessor
 
 
 class TestDocumentProcessor:
     """Test the DocumentProcessor class."""
 
-    def test_init_with_defaults(self):
+    def test_init_with_defaults(self) -> None:
         """Test initializing with default values."""
         processor = DocumentProcessor()
         assert processor.chunk_size == config.CHUNK_SIZE
         assert processor.chunk_overlap == config.CHUNK_OVERLAP
 
-    def test_init_with_custom_values(self):
+    def test_init_with_custom_values(self) -> None:
         """Test initializing with custom values."""
         processor = DocumentProcessor(chunk_size=500, chunk_overlap=100)
         assert processor.chunk_size == 500
         assert processor.chunk_overlap == 100
 
-    def test_load_markdown_file_not_found(self):
+    def test_load_markdown_file_not_found(self) -> None:
         """Test loading a non-existent file."""
         processor = DocumentProcessor()
         with pytest.raises(FileNotFoundError):
             processor.load_markdown("nonexistent_file.md")
 
-    def test_load_markdown(self, sample_markdown_content):
+    def test_load_markdown(self, sample_markdown_content) -> None:  # noqa: ANN001
         """Test loading a markdown file."""
         processor = DocumentProcessor()
         
@@ -58,7 +56,7 @@ class TestDocumentProcessor:
             if os.path.exists(temp_file_path):
                 os.unlink(temp_file_path)
 
-    def test_split_markdown(self, sample_markdown_content):
+    def test_split_markdown(self, sample_markdown_content) -> None:  # noqa: ANN001
         """Test splitting markdown content."""
         processor = DocumentProcessor(chunk_size=200, chunk_overlap=50)
         

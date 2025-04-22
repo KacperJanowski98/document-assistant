@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Document processor module for handling document loading and chunking.
 """
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 from langchain.text_splitter import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
@@ -54,7 +53,7 @@ class DocumentProcessor:
         # Combine all document pages into a single text
         return "\n\n".join(doc.page_content for doc in documents)
 
-    def split_markdown(self, markdown_content: str) -> List[Dict[str, Any]]:
+    def split_markdown(self, markdown_content: str) -> list[dict[str, Any]]:
         """
         Split markdown content into chunks, preserving header context.
 

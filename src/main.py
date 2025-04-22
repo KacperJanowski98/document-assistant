@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Main module for the document assistant application.
 """
-import os
-import sys
 import argparse
-from pathlib import Path
-import json
-import dotenv
+import os
 import pprint
+import sys
+from pathlib import Path
+
+import dotenv
 
 # Add the src directory to the path so we can import modules
 sys.path.append(str(Path(__file__).parent.parent))
@@ -17,11 +16,11 @@ sys.path.append(str(Path(__file__).parent.parent))
 # Load environment variables from .env file
 dotenv.load_dotenv()
 
-from src.rag_pipeline import RAGPipeline
 from src import config
+from src.rag_pipeline import RAGPipeline
 
 
-def print_section_header(title, char="="):
+def print_section_header(title, char="=") -> None:  # noqa: ANN001
     """Print a section header."""
     header = char * len(title)
     print(f"\n{header}")
@@ -29,7 +28,7 @@ def print_section_header(title, char="="):
     print(f"{header}\n")
 
 
-def print_retrieval_info(info):
+def print_retrieval_info(info) -> None:
     """Format and print retrieval information."""
     print_section_header("Retrieval Info", "-")
     print(f"Number of chunks retrieved: {info['chunk_count']}")
@@ -41,7 +40,7 @@ def print_retrieval_info(info):
               f"avg={score_stats.get('avg_score', 'N/A'):.4f}")
 
 
-def format_output(result):
+def format_output(result) -> None:
     """Format the query result for display."""
     # Print the query
     print_section_header("Query")
@@ -64,14 +63,14 @@ def format_output(result):
         print(f"\nProcessing time: {result['metadata']['processing_time']}")
 
 
-def ingest_document(args):
+def ingest_document(args) -> None:
     """Ingest a document into the vector store."""
     pipeline = RAGPipeline()
     pipeline.ingest_document(args.document)
     print(f"Document '{args.document}' successfully ingested.")
 
 
-def query_document(args):
+def query_document(args) -> None:
     """Query the document assistant."""
     pipeline = RAGPipeline()
     
@@ -98,13 +97,13 @@ def query_document(args):
                 break
 
 
-def get_config(args):
+def get_config(args) -> None:
     """Print the current configuration."""
     print_section_header("Current Configuration")
     pprint.pprint(config.get_config_summary())
 
 
-def main():
+def main() -> None:
     """Main entry point for the application."""
     parser = argparse.ArgumentParser(description="Document Assistant - RAG POC for Technical Documents")
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
