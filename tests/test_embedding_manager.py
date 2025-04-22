@@ -9,6 +9,8 @@ import shutil
 from pathlib import Path
 
 import pytest
+import chromadb
+from chromadb.errors import NotFoundError
 from unittest.mock import patch, MagicMock
 
 from src.embedding_manager import EmbeddingManager
@@ -91,10 +93,7 @@ class TestEmbeddingManager:
         # Setup mock client to throw NotFoundError
         mock_client_instance = MagicMock()
         mock_client.return_value = mock_client_instance
-        mock_client_instance.get_collection.side_effect = [
-            # First time we call, raise NotFoundError
-            chromadb.errors.NotFoundError("Collection does not exist")
-        ]
+        mock_client_instance.get_collection.side_effect = NotFoundError("Collection does not exist")
         
         manager = EmbeddingManager(
             embedding_model_provider="huggingface",
