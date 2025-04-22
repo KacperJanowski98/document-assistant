@@ -9,7 +9,13 @@ from pathlib import Path
 
 import chromadb
 from chromadb.errors import NotFoundError
-from langchain_community.embeddings import HuggingFaceEmbeddings, OllamaEmbeddings
+# Update import for HuggingFaceEmbeddings to use the non-deprecated version
+try:
+    from langchain_huggingface import HuggingFaceEmbeddings
+except ImportError:
+    # Fallback to the deprecated version if langchain_huggingface is not installed
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.embeddings.base import Embeddings
 
@@ -81,7 +87,7 @@ class EmbeddingManager:
             try:
                 self.chroma_client.get_collection(self.collection_name)
                 collection_exists = True
-            except NotFoundError:  # Changed from ValueError to NotFoundError
+            except NotFoundError:  # ChromaDB throws NotFoundError when collection doesn't exist
                 collection_exists = False
 
             # Initialize the vector store
