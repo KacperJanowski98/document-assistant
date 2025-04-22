@@ -78,7 +78,8 @@ class TestEmbeddingManager:
     
     @patch('src.embedding_manager.Chroma')
     @patch('src.embedding_manager.HuggingFaceEmbeddings')
-    def test_get_or_create_vector_store(self, mock_hf_embeddings, mock_chroma, temp_chroma_dir):
+    @patch('src.embedding_manager.chromadb.PersistentClient')
+    def test_get_or_create_vector_store(self, mock_client, mock_hf_embeddings, mock_chroma, temp_chroma_dir):
         """Test getting or creating a vector store."""
         # Mock setup
         mock_hf_instance = MagicMock()
@@ -86,6 +87,14 @@ class TestEmbeddingManager:
         
         mock_chroma_instance = MagicMock()
         mock_chroma.return_value = mock_chroma_instance
+        
+        # Setup mock client to throw NotFoundError
+        mock_client_instance = MagicMock()
+        mock_client.return_value = mock_client_instance
+        mock_client_instance.get_collection.side_effect = [
+            # First time we call, raise NotFoundError
+            chromadb.errors.NotFoundError("Collection does not exist")
+        ]
         
         manager = EmbeddingManager(
             embedding_model_provider="huggingface",
