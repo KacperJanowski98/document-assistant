@@ -3,7 +3,7 @@ name = "document-assistant"
 version = "0.1.0"
 description = "RAG POC for Technical Documents"
 authors = [
-    {name = "Kacper Janowski"},
+    {name = "Kacper Janowski", email = "example@example.com"},
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -12,6 +12,7 @@ dependencies = [
     "langchain",
     "langchain-community",
     "langchain-ollama",
+    "langchain-huggingface",
     "chromadb",
     "pytest",
     "langsmith",
@@ -22,8 +23,6 @@ dependencies = [
     "click",
     "ruff",
     "python-dotenv",
-    "docling>=2.30.0",
-    "marker-pdf>=0.2.17",
 ]
 
 [build-system]
