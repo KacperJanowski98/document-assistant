@@ -39,9 +39,6 @@ def print_retrieval_info(info):
         print(f"Similarity scores: min={score_stats.get('min_score', 'N/A'):.4f}, "
               f"max={score_stats.get('max_score', 'N/A'):.4f}, "
               f"avg={score_stats.get('avg_score', 'N/A'):.4f}")
-    
-    if 'metadata' in info and 'processing_time' in info['metadata']:
-        print(f"Processing time: {info['metadata']['processing_time']}")
 
 
 def format_output(result):
@@ -60,7 +57,11 @@ def format_output(result):
     
     # Print retrieval information
     if "retrieval_info" in result:
-        print_retrieval_info(result)
+        print_retrieval_info(result["retrieval_info"])  # Pass the retrieval_info part, not the entire result
+    
+    # Print processing time if available
+    if "metadata" in result and "processing_time" in result["metadata"]:
+        print(f"\nProcessing time: {result['metadata']['processing_time']}")
 
 
 def ingest_document(args):
