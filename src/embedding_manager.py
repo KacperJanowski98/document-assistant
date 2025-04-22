@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 
 import chromadb
+from chromadb.errors import NotFoundError
 from langchain_community.embeddings import HuggingFaceEmbeddings, OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.embeddings.base import Embeddings
@@ -80,7 +81,7 @@ class EmbeddingManager:
             try:
                 self.chroma_client.get_collection(self.collection_name)
                 collection_exists = True
-            except ValueError:
+            except NotFoundError:  # Changed from ValueError to NotFoundError
                 collection_exists = False
 
             # Initialize the vector store
