@@ -11,7 +11,7 @@ This document provides instructions for evaluating the `docling` and `marker` li
    ```
 2. Basic usage:
    ```
-   docling convert pdf_to_md your_document.pdf
+   docling --from pdf --to md your_document.pdf
    ```
 
 ### Marker
@@ -21,7 +21,7 @@ This document provides instructions for evaluating the `docling` and `marker` li
    ```
 2. Basic usage:
    ```
-   marker pdf_to_md your_document.pdf
+   marker_single your_document.pdf
    ```
 
 ## Evaluation Process

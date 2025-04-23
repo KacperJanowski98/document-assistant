@@ -38,26 +38,26 @@
 
 ## Phase 1: Configuration & Core RAG Pipeline
 
--   [ ] **Implement Configuration & Secrets Loading:**
-    -   [ ] **In `main.py` (or an initialization module): Add code to load `.env` file using `dotenv.load_dotenv()` *early* in the execution flow.**
-    -   [ ] Implement `config.py` with non-sensitive settings (Ollama model, embedding defaults, ChromaDB path, chunking, retrieval, prompts, RAGAs toggle etc.).
-    -   [ ] Ensure components requiring API keys (like LangSmith client initialization) read them from environment variables (e.g., `os.getenv("LANGCHAIN_API_KEY")`).
--   [ ] **Implement Document Ingestion:**
-    -   [ ] Load Markdown.
-    -   [ ] Split document (use config).
-    -   [ ] Initialize embedding model (use config).
-    -   [ ] Initialize ChromaDB client (use config).
-    -   [ ] Create/load ChromaDB collection (use config).
-    -   [ ] Embed chunks and add to ChromaDB.
--   [ ] **Implement Retrieval:**
-    -   [ ] Create retriever from ChromaDB.
-    -   [ ] Configure retriever `k` (use config).
-    -   [ ] Implement retrieval & capture scores.
--   [ ] **Implement Generation:**
-    -   [ ] Initialize Ollama LLM (use config).
-    -   [ ] Create prompt template (use config).
-    -   [ ] Build core RAG chain/logic.
-    -   [ ] Capture generated answer.
+-   [x] **Implement Configuration & Secrets Loading:**
+    -   [x] **In `main.py` (or an initialization module): Add code to load `.env` file using `dotenv.load_dotenv()` *early* in the execution flow.**
+    -   [x] Implement `config.py` with non-sensitive settings (Ollama model, embedding defaults, ChromaDB path, chunking, retrieval, prompts, RAGAs toggle etc.).
+    -   [x] Ensure components requiring API keys (like LangSmith client initialization) read them from environment variables (e.g., `os.getenv("LANGCHAIN_API_KEY")`).
+-   [x] **Implement Document Ingestion:**
+    -   [x] Load Markdown.
+    -   [x] Split document (use config).
+    -   [x] Initialize embedding model (use config).
+    -   [x] Initialize ChromaDB client (use config).
+    -   [x] Create/load ChromaDB collection (use config).
+    -   [x] Embed chunks and add to ChromaDB.
+-   [x] **Implement Retrieval:**
+    -   [x] Create retriever from ChromaDB.
+    -   [x] Configure retriever `k` (use config).
+    -   [x] Implement retrieval & capture scores.
+-   [x] **Implement Generation:**
+    -   [x] Initialize Ollama LLM (use config).
+    -   [x] Create prompt template (use config).
+    -   [x] Build core RAG chain/logic.
+    -   [x] Capture generated answer.
 
 ## Phase 2: CLI & Evaluation Integration
 
