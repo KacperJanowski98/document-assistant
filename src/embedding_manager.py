@@ -131,5 +131,11 @@ class EmbeddingManager:
             Retriever for the vector store.
         """
         vector_store = self.get_or_create_vector_store()
-        search_kwargs = {"k": top_k or config.TOP_K_CHUNKS}
-        return vector_store.as_retriever(search_kwargs=search_kwargs)
+        search_kwargs = {
+            "k": top_k or config.TOP_K_CHUNKS,
+        }
+        # Use search_type that includes scores
+        return vector_store.as_retriever(
+            search_type="similarity", 
+            search_kwargs=search_kwargs
+        )
