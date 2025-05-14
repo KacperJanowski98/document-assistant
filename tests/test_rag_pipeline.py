@@ -10,6 +10,7 @@ from langchain.schema import Document
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.llm_generator import LLMGenerator
+from src.ragas_evaluator import RAGASEvaluator
 from src.rag_pipeline import RAGPipeline
 
 
@@ -22,11 +23,13 @@ class TestRAGPipeline:
         mock_doc_processor = MagicMock(spec=DocumentProcessor)
         mock_embedding_manager = MagicMock(spec=EmbeddingManager)
         mock_llm_generator = MagicMock(spec=LLMGenerator)
+        mock_ragas_evaluator = MagicMock(spec=RAGASEvaluator)
         
         return {
             "doc_processor": mock_doc_processor,
             "embedding_manager": mock_embedding_manager,
-            "llm_generator": mock_llm_generator
+            "llm_generator": mock_llm_generator,
+            "ragas_evaluator": mock_ragas_evaluator
         }
 
     def test_init_with_components(self, mock_components: dict[str, MagicMock]) -> None:
@@ -35,28 +38,33 @@ class TestRAGPipeline:
             document_processor=mock_components["doc_processor"],
             embedding_manager=mock_components["embedding_manager"],
             llm_generator=mock_components["llm_generator"],
+            ragas_evaluator=mock_components["ragas_evaluator"],
             enable_langsmith=False
         )
         
         assert pipeline.document_processor == mock_components["doc_processor"]
         assert pipeline.embedding_manager == mock_components["embedding_manager"]
         assert pipeline.llm_generator == mock_components["llm_generator"]
+        assert pipeline.ragas_evaluator == mock_components["ragas_evaluator"]
         assert pipeline.enable_langsmith is False
         assert pipeline.callback_manager is None
 
     @patch('src.rag_pipeline.DocumentProcessor')
     @patch('src.rag_pipeline.EmbeddingManager')
     @patch('src.rag_pipeline.LLMGenerator')
-    def test_init_with_defaults(self, mock_llm_gen, mock_emb_mgr, mock_doc_proc) -> None:  # noqa: ANN001
+    @patch('src.rag_pipeline.RAGASEvaluator')
+    def test_init_with_defaults(self, mock_ragas_eval, mock_llm_gen, mock_emb_mgr, mock_doc_proc) -> None:  # noqa: ANN001
         """Test initialization with default values."""
         # Setup mocks
         mock_doc_proc_instance = MagicMock()
         mock_emb_mgr_instance = MagicMock()
         mock_llm_gen_instance = MagicMock()
+        mock_ragas_eval_instance = MagicMock()
         
         mock_doc_proc.return_value = mock_doc_proc_instance
         mock_emb_mgr.return_value = mock_emb_mgr_instance
         mock_llm_gen.return_value = mock_llm_gen_instance
+        mock_ragas_eval.return_value = mock_ragas_eval_instance
         
         # Initialize with defaults and LangSmith disabled for testing
         pipeline = RAGPipeline(enable_langsmith=False)
@@ -65,11 +73,13 @@ class TestRAGPipeline:
         assert pipeline.document_processor == mock_doc_proc_instance
         assert pipeline.embedding_manager == mock_emb_mgr_instance
         assert pipeline.llm_generator == mock_llm_gen_instance
+        assert pipeline.ragas_evaluator == mock_ragas_eval_instance
         
         # Verify classes were called with default values
         mock_doc_proc.assert_called_once_with()
         mock_emb_mgr.assert_called_once_with()
         mock_llm_gen.assert_called_once_with()
+        mock_ragas_eval.assert_called_once_with(callback_manager=None)
 
     @patch.dict(os.environ, {"LANGCHAIN_API_KEY": "dummy_key", "LANGCHAIN_PROJECT": "test-project"})
     @patch('src.rag_pipeline.LangChainTracer')
@@ -123,6 +133,7 @@ class TestRAGPipeline:
             document_processor=mock_doc_processor,
             embedding_manager=mock_embedding_manager,
             llm_generator=mock_components["llm_generator"],
+            ragas_evaluator=mock_components["ragas_evaluator"],
             enable_langsmith=False
         )
         
@@ -154,6 +165,7 @@ class TestRAGPipeline:
             document_processor=mock_components["doc_processor"],
             embedding_manager=mock_embedding_manager,
             llm_generator=mock_components["llm_generator"],
+            ragas_evaluator=mock_components["ragas_evaluator"],
             enable_langsmith=False
         )
         
@@ -167,11 +179,72 @@ class TestRAGPipeline:
         # Verify result
         assert result == mock_docs
 
-    def test_query(self, mock_components: dict[str, MagicMock]) -> None:
-        """Test querying the pipeline."""
+    def test_query_with_ragas_enabled(self, mock_components: dict[str, MagicMock]) -> None:
+        """Test querying the pipeline with RAGAS evaluation enabled."""
         # Setup mocks
         mock_embedding_manager = mock_components["embedding_manager"]
         mock_llm_generator = mock_components["llm_generator"]
+        mock_ragas_evaluator = mock_components["ragas_evaluator"]
+        
+        mock_retriever = MagicMock()
+        mock_docs = [Document(page_content="Test content")]
+        mock_answer = {
+            "query": "test query",
+            "context": "Test content",
+            "answer": "Generated answer",
+            "retrieval_info": {
+                "chunk_count": 1,
+                "score_stats": {}
+            }
+        }
+        mock_ragas_scores = {
+            "faithfulness": 0.9,
+            "answer_relevancy": 0.85,
+            "context_precision": 0.92,
+            "evaluation_time": 2.5
+        }
+        
+        mock_embedding_manager.get_retriever.return_value = mock_retriever
+        mock_retriever.invoke.return_value = mock_docs
+        mock_llm_generator.generate_answer.return_value = mock_answer
+        mock_ragas_evaluator.enable_evaluation = True
+        mock_ragas_evaluator.evaluate.return_value = mock_ragas_scores
+        
+        pipeline = RAGPipeline(
+            document_processor=mock_components["doc_processor"],
+            embedding_manager=mock_embedding_manager,
+            llm_generator=mock_llm_generator,
+            ragas_evaluator=mock_ragas_evaluator,
+            enable_langsmith=False
+        )
+        
+        # Test querying
+        result = pipeline.query("test query", top_k=5)
+        
+        # Verify expected method calls
+        mock_embedding_manager.get_retriever.assert_called_once_with(5)
+        mock_retriever.invoke.assert_called_once_with("test query")
+        mock_llm_generator.generate_answer.assert_called_once_with("test query", mock_docs)
+        mock_ragas_evaluator.evaluate.assert_called_once_with(
+            query="test query",
+            answer="Generated answer",
+            contexts=["Test content"]
+        )
+        
+        # Verify result
+        assert result["query"] == "test query"
+        assert result["context"] == "Test content"
+        assert result["answer"] == "Generated answer"
+        assert result["retrieval_info"]["chunk_count"] == 1
+        assert "processing_time" in result["metadata"]
+        assert result["ragas_metrics"] == mock_ragas_scores
+
+    def test_query_with_ragas_disabled(self, mock_components: dict[str, MagicMock]) -> None:
+        """Test querying the pipeline with RAGAS evaluation disabled."""
+        # Setup mocks
+        mock_embedding_manager = mock_components["embedding_manager"]
+        mock_llm_generator = mock_components["llm_generator"]
+        mock_ragas_evaluator = mock_components["ragas_evaluator"]
         
         mock_retriever = MagicMock()
         mock_docs = [Document(page_content="Test content")]
@@ -188,21 +261,21 @@ class TestRAGPipeline:
         mock_embedding_manager.get_retriever.return_value = mock_retriever
         mock_retriever.invoke.return_value = mock_docs
         mock_llm_generator.generate_answer.return_value = mock_answer
+        mock_ragas_evaluator.enable_evaluation = False
         
         pipeline = RAGPipeline(
             document_processor=mock_components["doc_processor"],
             embedding_manager=mock_embedding_manager,
             llm_generator=mock_llm_generator,
+            ragas_evaluator=mock_ragas_evaluator,
             enable_langsmith=False
         )
         
         # Test querying
         result = pipeline.query("test query", top_k=5)
         
-        # Verify expected method calls
-        mock_embedding_manager.get_retriever.assert_called_once_with(5)
-        mock_retriever.invoke.assert_called_once_with("test query")
-        mock_llm_generator.generate_answer.assert_called_once_with("test query", mock_docs)
+        # Verify RAGAS evaluation was not called
+        mock_ragas_evaluator.evaluate.assert_not_called()
         
         # Verify result
         assert result["query"] == "test query"
@@ -210,3 +283,4 @@ class TestRAGPipeline:
         assert result["answer"] == "Generated answer"
         assert result["retrieval_info"]["chunk_count"] == 1
         assert "processing_time" in result["metadata"]
+        assert "ragas_metrics" not in result
