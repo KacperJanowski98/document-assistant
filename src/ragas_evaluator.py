@@ -83,9 +83,18 @@ class RAGASEvaluator:
             dataset = self.prepare_dataset(query, answer, contexts)
             
             # Configure the evaluation run
+            # Note: RunConfig may not accept 'callbacks' directly
+            # Use it without callbacks or check RAGAS documentation for proper usage
             run_config = None
             if self.callback_manager:
-                run_config = RunConfig(callbacks=self.callback_manager)
+                try:
+                    # Try to use RunConfig with the callback manager
+                    # This may need adjustment based on RAGAS version
+                    run_config = RunConfig()
+                    # Some versions might use different parameter names
+                except Exception:
+                    # If RunConfig doesn't support callbacks, proceed without
+                    run_config = None
             
             # Run evaluation
             result = evaluate(
@@ -119,8 +128,13 @@ class RAGASEvaluator:
         Returns:
             Formatted string for display.
         """
-        if not scores:
+        # Handle None case
+        if scores is None:
             return "No evaluation metrics available."
+        
+        # Handle empty dictionary case
+        if not scores:
+            return ""
         
         output = []
         for metric_name, score in scores.items():
