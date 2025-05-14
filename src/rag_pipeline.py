@@ -98,6 +98,32 @@ class RAGPipeline:
         
         return len(chunks)
 
+    def retrieve_with_scores(self, query: str, top_k: int | None = None) -> list[tuple[Document, float]]:
+        """
+        Retrieve relevant documents with their similarity scores.
+
+        Args:
+            query: Query string.
+            top_k: Number of documents to retrieve.
+
+        Returns:
+            List of (document, score) tuples.
+        """
+        # Get the vector store
+        vector_store = self.embedding_manager.get_or_create_vector_store()
+        
+        # Perform similarity search with scores
+        docs_and_scores = vector_store.similarity_search_with_score(
+            query,
+            k=top_k or self.embedding_manager.top_k_chunks or 5
+        )
+        
+        # Add scores to document metadata
+        for doc, score in docs_and_scores:
+            doc.metadata["score"] = score
+        
+        return docs_and_scores
+
     def retrieve(self, query: str, top_k: int | None = None) -> list[Document]:
         """
         Retrieve relevant documents for a query.
@@ -109,11 +135,11 @@ class RAGPipeline:
         Returns:
             List of retrieved documents.
         """
-        # Get a retriever from the embedding manager
-        retriever = self.embedding_manager.get_retriever(top_k)
+        # Get documents with scores
+        docs_and_scores = self.retrieve_with_scores(query, top_k)
         
-        # Retrieve documents
-        return retriever.invoke(query)
+        # Return just the documents (scores are now in metadata)
+        return [doc for doc, _ in docs_and_scores]
 
     def query(self, query: str, top_k: int | None = None) -> dict[str, Any]:
         """
