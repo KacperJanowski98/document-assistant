@@ -18,6 +18,7 @@ dotenv.load_dotenv()
 
 from src import config
 from src.rag_pipeline import RAGPipeline
+from src.ragas_evaluator import RAGASEvaluator
 
 
 def print_section_header(title, char="=") -> None:  # noqa: ANN001
@@ -40,6 +41,14 @@ def print_retrieval_info(info) -> None:
               f"avg={score_stats.get('avg_score', 'N/A'):.4f}")
 
 
+def print_ragas_metrics(metrics: dict) -> None:
+    """Format and print RAGAS metrics."""
+    print_section_header("RAGAS Metrics", "-")
+    evaluator = RAGASEvaluator()
+    formatted_scores = evaluator.format_scores(metrics)
+    print(formatted_scores)
+
+
 def format_output(result) -> None:
     """Format the query result for display."""
     # Print the query
@@ -57,6 +66,10 @@ def format_output(result) -> None:
     # Print retrieval information
     if "retrieval_info" in result:
         print_retrieval_info(result["retrieval_info"])  # Pass the retrieval_info part, not the entire result
+    
+    # Print RAGAS metrics if available
+    if "ragas_metrics" in result:
+        print_ragas_metrics(result["ragas_metrics"])
     
     # Print processing time if available
     if "metadata" in result and "processing_time" in result["metadata"]:
