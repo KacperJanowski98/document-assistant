@@ -73,7 +73,12 @@ class TestLLMGenerator:
             
             assert result["context"] == ""
             assert result["chunk_count"] == 0
-            assert result["score_stats"] == {}
+            # When there are no documents, we now return zero scores instead of empty dict
+            assert result["score_stats"] == {
+                "min_score": 0.0,
+                "max_score": 0.0,
+                "avg_score": 0.0,
+            }
 
     def test_process_retrieved_documents(self) -> None:
         """Test processing retrieved documents."""
