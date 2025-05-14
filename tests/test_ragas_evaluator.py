@@ -90,27 +90,35 @@ class TestRAGASEvaluator:
         
         # Verify evaluate was called with correct arguments
         mock_evaluate.assert_called_once()
-        call_args = mock_evaluate.call_args[1]
-        assert call_args["dataset"]["questions"] == [query]
-        assert call_args["dataset"]["answers"] == [answer]
-        assert call_args["dataset"]["contexts"] == [[contexts[0]]]
-        assert call_args["metrics"] == evaluator.metrics
+        call_args = mock_evaluate.call_args
+        assert call_args.kwargs["dataset"]["questions"] == [query]
+        assert call_args.kwargs["dataset"]["answers"] == [answer]
+        assert call_args.kwargs["dataset"]["contexts"] == [[contexts[0]]]
+        assert call_args.kwargs["metrics"] == evaluator.metrics
 
     @patch("src.ragas_evaluator.evaluate")
-    def test_evaluate_with_callback_manager(self, mock_evaluate, evaluator):
+    @patch("src.ragas_evaluator.RunConfig")
+    def test_evaluate_with_callback_manager(self, mock_runconfig, mock_evaluate, evaluator):
         """Test evaluation with callback manager."""
         callback_manager = MagicMock()
         evaluator.callback_manager = callback_manager
         
         mock_result = MagicMock()
-        mock_result.scores = {"faithfulness": 0.9}
+        mock_result.scores = {"faithfulness": 0.9, "answer_relevancy": 0.85, "context_precision": 0.92}
         mock_evaluate.return_value = mock_result
+        
+        # Mock RunConfig
+        mock_runconfig_instance = MagicMock()
+        mock_runconfig.return_value = mock_runconfig_instance
         
         result = evaluator.evaluate("query", "answer", ["context"])
         
-        # Verify RunConfig was created with callback manager
-        call_args = mock_evaluate.call_args[1]
-        assert call_args["run_config"] is not None
+        # Verify RunConfig was created
+        mock_runconfig.assert_called_once()
+        
+        # Verify evaluate was called with the RunConfig instance
+        call_args = mock_evaluate.call_args
+        assert call_args.kwargs["run_config"] == mock_runconfig_instance
 
     @patch("src.ragas_evaluator.evaluate")
     def test_evaluate_exception_handling(self, mock_evaluate, evaluator):
