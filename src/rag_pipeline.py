@@ -12,6 +12,7 @@ from langchain.schema import Document
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.llm_generator import LLMGenerator
+from src.ragas_evaluator import RAGASEvaluator
 
 
 class RAGPipeline:
@@ -22,6 +23,7 @@ class RAGPipeline:
         document_processor: DocumentProcessor | None = None,
         embedding_manager: EmbeddingManager | None = None,
         llm_generator: LLMGenerator | None = None,
+        ragas_evaluator: RAGASEvaluator | None = None,
         enable_langsmith: bool = True,
     ):
         """
@@ -31,6 +33,7 @@ class RAGPipeline:
             document_processor: DocumentProcessor instance.
             embedding_manager: EmbeddingManager instance.
             llm_generator: LLMGenerator instance.
+            ragas_evaluator: RAGASEvaluator instance.
             enable_langsmith: Whether to enable LangSmith tracing.
         """
         self.document_processor = document_processor or DocumentProcessor()
@@ -38,6 +41,9 @@ class RAGPipeline:
         self.llm_generator = llm_generator or LLMGenerator()
         self.enable_langsmith = enable_langsmith
         self.callback_manager = self._setup_callbacks() if enable_langsmith else None
+        self.ragas_evaluator = ragas_evaluator or RAGASEvaluator(
+            callback_manager=self.callback_manager
+        )
 
     def _setup_callbacks(self) -> CallbackManager | None:
         """
@@ -128,6 +134,24 @@ class RAGPipeline:
         
         # Generate answer
         result = self.llm_generator.generate_answer(query, retrieved_docs)
+        
+        # Evaluate using RAGAS if enabled
+        if self.ragas_evaluator.enable_evaluation:
+            # Extract contexts as strings
+            contexts = []
+            for doc in retrieved_docs:
+                contexts.append(doc.page_content)
+            
+            # Run RAGAS evaluation
+            evaluation_scores = self.ragas_evaluator.evaluate(
+                query=query,
+                answer=result["answer"],
+                contexts=contexts
+            )
+            
+            # Add scores to result
+            if evaluation_scores:
+                result["ragas_metrics"] = evaluation_scores
         
         # Add timing information
         elapsed_time = time.time() - start_time
