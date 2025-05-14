@@ -9,6 +9,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.tracers import LangChainTracer
 from langchain.schema import Document
 
+from src import config
 from src.document_processor import DocumentProcessor
 from src.embedding_manager import EmbeddingManager
 from src.llm_generator import LLMGenerator
@@ -115,7 +116,7 @@ class RAGPipeline:
         # Perform similarity search with scores
         docs_and_scores = vector_store.similarity_search_with_score(
             query,
-            k=top_k or self.embedding_manager.top_k_chunks or 5
+            k=top_k or config.TOP_K_CHUNKS
         )
         
         # Add scores to document metadata
