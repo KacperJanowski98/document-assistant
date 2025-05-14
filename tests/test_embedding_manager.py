@@ -168,6 +168,7 @@ class TestEmbeddingManager:
         
         # Verify as_retriever was called correctly
         mock_vector_store.as_retriever.assert_called_once_with(
+            search_type="similarity",
             search_kwargs={"k": config.TOP_K_CHUNKS}
         )
         assert result == mock_retriever
@@ -179,5 +180,6 @@ class TestEmbeddingManager:
         
         # Verify as_retriever was called with custom k
         mock_vector_store.as_retriever.assert_called_once_with(
+            search_type="similarity",
             search_kwargs={"k": 10}
         )
