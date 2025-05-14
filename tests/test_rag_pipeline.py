@@ -155,11 +155,15 @@ class TestRAGPipeline:
         """Test retrieving documents."""
         # Setup mocks
         mock_embedding_manager = mock_components["embedding_manager"]
-        mock_retriever = MagicMock()
-        mock_docs = [Document(page_content="Test content")]
+        mock_vector_store = MagicMock()
         
-        mock_embedding_manager.get_retriever.return_value = mock_retriever
-        mock_retriever.invoke.return_value = mock_docs
+        # Create test documents with scores
+        doc1 = Document(page_content="Test content 1", metadata={})
+        doc2 = Document(page_content="Test content 2", metadata={})
+        docs_and_scores = [(doc1, 0.9), (doc2, 0.85)]
+        
+        mock_embedding_manager.get_or_create_vector_store.return_value = mock_vector_store
+        mock_vector_store.similarity_search_with_score.return_value = docs_and_scores
         
         pipeline = RAGPipeline(
             document_processor=mock_components["doc_processor"],
@@ -173,11 +177,15 @@ class TestRAGPipeline:
         result = pipeline.retrieve("test query", top_k=5)
         
         # Verify expected method calls
-        mock_embedding_manager.get_retriever.assert_called_once_with(5)
-        mock_retriever.invoke.assert_called_once_with("test query")
+        mock_embedding_manager.get_or_create_vector_store.assert_called_once()
+        mock_vector_store.similarity_search_with_score.assert_called_once_with("test query", k=5)
         
         # Verify result
-        assert result == mock_docs
+        assert len(result) == 2
+        assert result[0].page_content == "Test content 1"
+        assert result[0].metadata["score"] == 0.9
+        assert result[1].page_content == "Test content 2"
+        assert result[1].metadata["score"] == 0.85
 
     def test_query_with_ragas_enabled(self, mock_components: dict[str, MagicMock]) -> None:
         """Test querying the pipeline with RAGAS evaluation enabled."""
@@ -185,9 +193,12 @@ class TestRAGPipeline:
         mock_embedding_manager = mock_components["embedding_manager"]
         mock_llm_generator = mock_components["llm_generator"]
         mock_ragas_evaluator = mock_components["ragas_evaluator"]
+        mock_vector_store = MagicMock()
         
-        mock_retriever = MagicMock()
-        mock_docs = [Document(page_content="Test content")]
+        # Create test documents with scores
+        doc1 = Document(page_content="Test content", metadata={})
+        docs_and_scores = [(doc1, 0.9)]
+        
         mock_answer = {
             "query": "test query",
             "context": "Test content",
@@ -204,8 +215,8 @@ class TestRAGPipeline:
             "evaluation_time": 2.5
         }
         
-        mock_embedding_manager.get_retriever.return_value = mock_retriever
-        mock_retriever.invoke.return_value = mock_docs
+        mock_embedding_manager.get_or_create_vector_store.return_value = mock_vector_store
+        mock_vector_store.similarity_search_with_score.return_value = docs_and_scores
         mock_llm_generator.generate_answer.return_value = mock_answer
         mock_ragas_evaluator.enable_evaluation = True
         mock_ragas_evaluator.evaluate.return_value = mock_ragas_scores
@@ -222,9 +233,9 @@ class TestRAGPipeline:
         result = pipeline.query("test query", top_k=5)
         
         # Verify expected method calls
-        mock_embedding_manager.get_retriever.assert_called_once_with(5)
-        mock_retriever.invoke.assert_called_once_with("test query")
-        mock_llm_generator.generate_answer.assert_called_once_with("test query", mock_docs)
+        mock_embedding_manager.get_or_create_vector_store.assert_called()
+        mock_vector_store.similarity_search_with_score.assert_called_once_with("test query", k=5)
+        mock_llm_generator.generate_answer.assert_called_once()
         mock_ragas_evaluator.evaluate.assert_called_once_with(
             query="test query",
             answer="Generated answer",
@@ -245,9 +256,12 @@ class TestRAGPipeline:
         mock_embedding_manager = mock_components["embedding_manager"]
         mock_llm_generator = mock_components["llm_generator"]
         mock_ragas_evaluator = mock_components["ragas_evaluator"]
+        mock_vector_store = MagicMock()
         
-        mock_retriever = MagicMock()
-        mock_docs = [Document(page_content="Test content")]
+        # Create test documents with scores
+        doc1 = Document(page_content="Test content", metadata={})
+        docs_and_scores = [(doc1, 0.9)]
+        
         mock_answer = {
             "query": "test query",
             "context": "Test content",
@@ -258,8 +272,8 @@ class TestRAGPipeline:
             }
         }
         
-        mock_embedding_manager.get_retriever.return_value = mock_retriever
-        mock_retriever.invoke.return_value = mock_docs
+        mock_embedding_manager.get_or_create_vector_store.return_value = mock_vector_store
+        mock_vector_store.similarity_search_with_score.return_value = docs_and_scores
         mock_llm_generator.generate_answer.return_value = mock_answer
         mock_ragas_evaluator.enable_evaluation = False
         
