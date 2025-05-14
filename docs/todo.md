@@ -61,18 +61,18 @@
 
 ## Phase 2: CLI & Evaluation Integration
 
--   [ ] **Implement CLI Interface (`main.py`):**
-    -   [ ] Use `argparse` or `click` for args.
-    -   [ ] **Ensure `.env` loading happens before CLI logic executes.**
-    -   [ ] Orchestrate RAG pipeline.
-    -   [ ] Handle document ingestion logic.
-    -   [ ] Format/print initial output (Query, Context, Answer, Info).
--   [ ] **Integrate RAGAs Evaluation:**
-    -   [ ] Import RAGAs components.
-    -   [ ] Prepare RAGAs dataset dictionary.
-    *   [ ] Implement `ragas.evaluate` call.
-    *   [ ] Implement conditional execution (`ENABLE_RAGAS_EVAL`).
-    *   [ ] Update CLI output to display RAGAs metrics.
+-   [x] **Implement CLI Interface (`main.py`):**
+    -   [x] Use `argparse` or `click` for args.
+    -   [x] **Ensure `.env` loading happens before CLI logic executes.**
+    -   [x] Orchestrate RAG pipeline.
+    -   [x] Handle document ingestion logic.
+    -   [x] Format/print initial output (Query, Context, Answer, Info).
+-   [x] **Integrate RAGAs Evaluation:**
+    -   [x] Import RAGAs components.
+    -   [x] Prepare RAGAs dataset dictionary.
+    -   [x] Implement `ragas.evaluate` call.
+    -   [x] Implement conditional execution (`ENABLE_RAGAS_EVAL`).
+    -   [x] Update CLI output to display RAGAs metrics.
 
 ## Phase 3: Observability, Testing & Documentation
 
