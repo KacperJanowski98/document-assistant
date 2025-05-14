@@ -72,7 +72,12 @@ class LLMGenerator:
         for doc in docs:
             # Get content and score
             context = doc.page_content
+            # ChromaDB returns distance scores - convert to similarity if needed
             score = doc.metadata.get("score", 0) if hasattr(doc, "metadata") else 0
+            # If score is a distance (lower is better), convert to similarity (higher is better)
+            # This is a simple conversion - adjust based on your specific needs
+            if score > 1:  # Likely a distance score
+                score = 1 / (1 + score)  # Convert distance to similarity
             
             # Get headers if available
             headers = []
@@ -96,11 +101,18 @@ class LLMGenerator:
         
         # Calculate similarity score statistics if scores are available
         score_stats = {}
-        if scores:
+        if scores and any(s > 0 for s in scores):  # Only if we have non-zero scores
             score_stats = {
                 "min_score": min(scores),
                 "max_score": max(scores),
                 "avg_score": sum(scores) / len(scores),
+            }
+        else:
+            # If all scores are 0, it might mean scoring isn't working
+            score_stats = {
+                "min_score": 0.0,
+                "max_score": 0.0,
+                "avg_score": 0.0,
             }
         
         return {
