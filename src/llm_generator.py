@@ -5,7 +5,7 @@ from typing import Any
 
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM  # Updated import
 
 from src import config
 
@@ -50,7 +50,7 @@ class LLMGenerator:
         Returns:
             Initialized Ollama LLM.
         """
-        return Ollama(
+        return OllamaLLM(  # Updated class
             model=self.model_name,
             base_url=self.base_url,
             temperature=0.0,  # Use a low temperature for more deterministic answers
