@@ -231,8 +231,10 @@ document-assistant/
 │   └── test_utils.py          # Environment variable tests
 ├── .env.example               # Example environment variables
 ├── .gitignore
+├── .pre-commit-config.yaml    # Pre-commit hooks configuration
 ├── pyproject.toml             # Project dependencies and configuration
-└── README.md                  # This file
+├── README.md                  # This file
+└── run_checks.py              # Code quality check script
 ```
 
 ## Configuration
@@ -280,6 +282,9 @@ pytest -v
 
 # Run tests and show print statements
 pytest -s
+
+# Run all checks (tests and linting) with the provided script
+python run_checks.py
 ```
 
 ### Test Coverage
@@ -306,9 +311,12 @@ ruff format src/ tests/
 
 # Check formatting without making changes
 ruff format --check src/ tests/
+
+# Use the run_checks.py script for all checks in one command
+python run_checks.py
 ```
 
-### Pre-commit Setup (Optional)
+### Pre-commit Setup
 
 To automatically run code quality checks before committing:
 
@@ -319,6 +327,15 @@ pip install pre-commit
 # Set up pre-commit hooks
 pre-commit install
 ```
+
+This will run the following checks before each commit:
+- Ruff linting
+- Ruff formatting
+- Unit tests
+- Trailing whitespace checks
+- End-of-file fixer
+- YAML validation
+- Large file check
 
 ## Performance Considerations
 
@@ -344,6 +361,9 @@ pre-commit install
    - Check that the `.env` file is in the project root directory
    - Verify variables are properly formatted: `KEY=value` (no spaces around `=`)
 
+4. **Dependency Warning**
+   - If you see a warning about deprecated Ollama import from LangChain, ignore it - we've updated to the latest version
+
 ## Future Enhancements
 
 Planned improvements for future phases:
@@ -361,7 +381,7 @@ Planned improvements for future phases:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests and code quality checks
+4. Run tests and code quality checks (`python run_checks.py`)
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
