@@ -16,7 +16,7 @@ class TestLLMGenerator:
 
     def test_init_with_defaults(self) -> None:
         """Test initialization with default values."""
-        with patch('src.llm_generator.Ollama') as mock_ollama:
+        with patch('src.llm_generator.OllamaLLM') as mock_ollama:
             mock_llm = MagicMock()
             mock_ollama.return_value = mock_llm
             
@@ -28,7 +28,7 @@ class TestLLMGenerator:
             assert generator.rag_prompt_template == config.RAG_PROMPT_TEMPLATE
             assert generator.llm == mock_llm
             
-            # Verify Ollama was initialized correctly
+            # Verify OllamaLLM was initialized correctly
             mock_ollama.assert_called_once_with(
                 model=config.OLLAMA_MODEL,
                 base_url=config.OLLAMA_BASE_URL,
@@ -37,7 +37,7 @@ class TestLLMGenerator:
 
     def test_init_with_custom_values(self) -> None:
         """Test initialization with custom values."""
-        with patch('src.llm_generator.Ollama') as mock_ollama:
+        with patch('src.llm_generator.OllamaLLM') as mock_ollama:
             mock_llm = MagicMock()
             mock_ollama.return_value = mock_llm
             
@@ -58,7 +58,7 @@ class TestLLMGenerator:
             assert generator.system_prompt == custom_system_prompt
             assert generator.rag_prompt_template == custom_template
             
-            # Verify Ollama was initialized with custom values
+            # Verify OllamaLLM was initialized with custom values
             mock_ollama.assert_called_once_with(
                 model=custom_model,
                 base_url=custom_url,
@@ -67,7 +67,7 @@ class TestLLMGenerator:
 
     def test_process_retrieved_documents_empty(self) -> None:
         """Test processing empty retrieved documents."""
-        with patch('src.llm_generator.Ollama'):
+        with patch('src.llm_generator.OllamaLLM'):
             generator = LLMGenerator()
             result = generator.process_retrieved_documents([])
             
@@ -82,7 +82,7 @@ class TestLLMGenerator:
 
     def test_process_retrieved_documents(self) -> None:
         """Test processing retrieved documents."""
-        with patch('src.llm_generator.Ollama'):
+        with patch('src.llm_generator.OllamaLLM'):
             generator = LLMGenerator()
             
             # Create test documents
@@ -117,7 +117,7 @@ class TestLLMGenerator:
 
     def test_generate_answer(self) -> None:
         """Test generating an answer."""
-        with patch('src.llm_generator.Ollama') as mock_ollama:
+        with patch('src.llm_generator.OllamaLLM') as mock_ollama:
             # Setup mock LLM
             mock_llm = MagicMock()
             mock_llm.invoke.return_value = "Generated answer"
