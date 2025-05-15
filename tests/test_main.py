@@ -16,9 +16,10 @@ class TestCLIFunctions:
         """Test printing section headers."""
         print_section_header("Test Header", "=")
         captured = capsys.readouterr()
-        assert "============\n" in captured.out
+        # The header should match the length of "Test Header" (11 characters)
+        assert "===========\n" in captured.out
         assert "Test Header\n" in captured.out
-        assert "============\n" in captured.out
+        assert "===========\n" in captured.out
 
     def test_print_retrieval_info(self, capsys):
         """Test printing retrieval information."""
