@@ -66,10 +66,33 @@ cp .env.example .env
 # Edit .env with your actual API keys
 ```
 
-Environment variables needed:
-- `LANGCHAIN_API_KEY`: For LangSmith tracing (optional)
-- `LANGCHAIN_PROJECT`: Project name for LangSmith (optional, defaults to "document-assistant")
-- `LANGCHAIN_TRACING_V2`: Set to "true" to enable tracing (optional)
+**Environment Variables Configuration:**
+
+The following environment variables can be configured in your `.env` file:
+
+- **`LANGCHAIN_API_KEY`**: Your LangSmith API key for tracing and monitoring (optional)
+  - Get your API key from [LangSmith](https://smith.langchain.com/)
+  - If not set, LangSmith tracing will be disabled but the application will work normally
+- **`LANGCHAIN_PROJECT`**: Project name for organizing traces in LangSmith (optional)
+  - Defaults to: `"document-assistant"`
+  - Useful for separating different environments (dev, prod, etc.)
+- **`LANGCHAIN_TRACING_V2`**: Enable or disable LangSmith tracing (optional)
+  - Set to: `"true"` to enable tracing
+  - If not set or set to `"false"`, tracing is disabled
+
+**LangSmith Setup Guide:**
+
+1. Sign up for a free LangSmith account at [smith.langchain.com](https://smith.langchain.com/)
+2. Create a new API key in your account settings
+3. Add the API key to your `.env` file:
+   ```
+   LANGCHAIN_API_KEY=your_api_key_here
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_PROJECT=document-assistant
+   ```
+4. Run the application - traces will automatically appear in your LangSmith dashboard
+
+The application will warn you if the API key is not set but will continue to function normally.
 
 5. Install and run Ollama with the required model
 ```bash
@@ -202,8 +225,10 @@ document-assistant/
 │   ├── test_document_processor.py
 │   ├── test_embedding_manager.py
 │   ├── test_llm_generator.py
+│   ├── test_main.py           # CLI tests
 │   ├── test_rag_pipeline.py
-│   └── test_ragas_evaluator.py
+│   ├── test_ragas_evaluator.py
+│   └── test_utils.py          # Environment variable tests
 ├── .env.example               # Example environment variables
 ├── .gitignore
 ├── pyproject.toml             # Project dependencies and configuration
@@ -236,7 +261,9 @@ The application behavior can be customized through the `src/config.py` file:
 - `SYSTEM_PROMPT`: System instructions for the LLM
 - `RAG_PROMPT_TEMPLATE`: Template for constructing prompts
 
-## Running Tests
+## Testing
+
+### Running Tests
 
 ```bash
 # Run all tests
@@ -247,6 +274,50 @@ pytest tests/test_ragas_evaluator.py
 
 # Run with coverage
 pytest --cov=src tests/
+
+# Run tests in verbose mode
+pytest -v
+
+# Run tests and show print statements
+pytest -s
+```
+
+### Test Coverage
+
+The project includes comprehensive unit tests for all major components:
+- Configuration loading and environment variable handling
+- Document processing and chunking
+- Embedding management and vector store operations
+- LLM interactions and answer generation
+- RAG pipeline coordination
+- RAGAs evaluation integration
+- CLI functionality and error handling
+
+## Code Quality
+
+### Running Code Quality Checks
+
+```bash
+# Run ruff linter
+ruff check src/ tests/
+
+# Run ruff formatter
+ruff format src/ tests/
+
+# Check formatting without making changes
+ruff format --check src/ tests/
+```
+
+### Pre-commit Setup (Optional)
+
+To automatically run code quality checks before committing:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Set up pre-commit hooks
+pre-commit install
 ```
 
 ## Performance Considerations
@@ -254,6 +325,24 @@ pytest --cov=src tests/
 - RAGAs evaluation adds computational overhead as it requires additional LLM calls
 - You can disable RAGAs evaluation by setting `ENABLE_RAGAS_EVAL = False` in `config.py`
 - LangSmith tracing can be disabled by not setting the `LANGCHAIN_API_KEY`
+
+## Troubleshooting
+
+### Common Issues
+
+1. **LangSmith API Key Warning**
+   - If you see "Warning: LANGCHAIN_API_KEY not set", this is normal if you haven't configured LangSmith
+   - The application will work without LangSmith, just without tracing capabilities
+
+2. **Ollama Connection Issues**
+   - Ensure Ollama is running: `ollama serve`
+   - Check the model is available: `ollama list`
+   - Verify the URL in `config.py` matches your Ollama installation
+
+3. **Environment Variable Issues**
+   - Ensure `.env` file exists (copy from `.env.example`)
+   - Check that the `.env` file is in the project root directory
+   - Verify variables are properly formatted: `KEY=value` (no spaces around `=`)
 
 ## Future Enhancements
 
@@ -266,6 +355,16 @@ Planned improvements for future phases:
 - Web-based user interface
 - Batch processing capabilities
 - Caching for improved performance
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests and code quality checks
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## License
 
