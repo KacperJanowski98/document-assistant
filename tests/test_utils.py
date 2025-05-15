@@ -2,14 +2,18 @@
 Tests for environment variable loading and utility functions.
 """
 import os
+import sys
+import importlib
 from unittest.mock import patch
 import pytest
 
 
 def test_dotenv_loading():
     """Test that dotenv is loaded early in main module."""
-    # This test verifies that the import of main.py triggers dotenv loading
-    # which is crucial for LangSmith API key availability
+    # Remove src.main from sys.modules if it exists to force fresh import
+    if 'src.main' in sys.modules:
+        del sys.modules['src.main']
+    
     with patch('dotenv.load_dotenv') as mock_dotenv:
         # Import main to trigger the dotenv loading
         import src.main
